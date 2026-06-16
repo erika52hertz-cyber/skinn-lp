@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKINN — 肌診断</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  background: #F7F4EF;
+  color: #111;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.container { max-width: 600px; width: 100%; }
+.logo {
+  font-family: Georgia, serif;
+  font-size: 24px;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  color: #1C3A2A;
+  text-align: center;
+  margin-bottom: 48px;
+}
+.card {
+  background: #fff;
+  border: 1px solid #E2DED8;
+  border-radius: 16px;
+  padding: 40px 36px;
+}
+.step-indicator {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #4A7C5F;
+  margin-bottom: 12px;
+}
+.progress-bar {
+  height: 4px;
+  background: #E2DED8;
+  border-radius: 2px;
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1C3A2A, #4A7C5F);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.question {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1C3A2A;
+  line-height: 1.4;
+  margin-bottom: 28px;
+  font-family: Georgia, serif;
+}
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.option {
+  border: 1px solid #E2DED8;
+  border-radius: 10px;
+  padding: 16px 20px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fff;
+  text-align: left;
+  width: 100%;
+}
+.option:hover { border-color: #1C3A2A; background: #F7F4EF; }
+.option.selected {
+  border-color: #1C3A2A;
+  background: rgba(28,58,42,0.05);
+  color: #1C3A2A;
+  font-weight: 600;
+}
+.btn {
+  display: block;
+  width: 100%;
+  margin-top: 28px;
+  padding: 16px;
+  background: #1C3A2A;
+  color: #F7F4EF;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+  text-align: center;
+}
+.btn:hover { background: #4A7C5F; }
+.btn:disabled { background: #ccc; cursor: not-allowed; }
+.loading {
+  text-align: center;
+  padding: 40px 0;
+  display: none;
+}
+.loading p { color: #888; font-size: 14px; margin-top: 16px; }
+.loading-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #1C3A2A;
+  margin: 0 3px;
+  animation: bounce 1.2s infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-8px); }
+}
+.result { display: none; }
+.result-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #4A7C5F;
+  margin-bottom: 12px;
+}
+.result-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1C3A2A;
+  font-family: Georgia, serif;
+  margin-bottom: 20px;
+  line-height: 1.3;
+}
+.result-body {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.8;
+  margin-bottom: 28px;
+  white-space: pre-wrap;
+}
+.ingredients {
+  background: #F7F4EF;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 28px;
+}
+.ingredients h4 {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #4A7C5F;
+  margin-bottom: 12px;
+}
+.ingredient-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ingredient-list li {
+  font-size: 12px;
+  background: #fff;
+  border: 1px solid #E2DED8;
+  border-radius: 20px;
+  padding: 4px 12px;
+  color: #333;
+}
+.cta-note {
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  margin-top: 12px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">SKINN</div>
+  <div class="card">
+
+    <div id="quiz">
+      <div class="step-indicator" id="stepLabel">質問 1 / 5</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:20%"></div>
+      </div>
+      <div class="question" id="questionText"></div>
+      <div class="options" id="optionsContainer"></div>
+      <button class="btn" id="nextBtn" disabled onclick="nextQuestion()">次へ</button>
+    </div>
+
+    <div class="loading" id="loading">
+      <div>
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+      </div>
+      <p>AIがあなたの肌を解析中...</p>
+    </div>
+
+    <div class="result" id="result">
+      <div class="result-tag">あなたの肌診断結果</div>
+      <div class="result-title" id="resultTitle"></div>
+      <div class="result-body" id="resultBody"></div>
+      <div class="ingredients">
+        <h4>推奨処方成分</h4>
+        <ul class="ingredient-list" id="ingredientList"></ul>
+      </div>
+      <a href="https://skinn-lp.vercel.app/" class="btn">
+        この処方で申し込む — 初回 ¥2,980
+      </a>
+      <p class="cta-note">解約はいつでも可能 / 送料無料 / 30日間返金保証</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: '洗顔後、何もつけないと肌はどうなりますか？',
+    options: ['すぐに突っ張る', '少し突っ張る', 'ほぼ変化なし', 'テカリが気になる']
+  },
+  {
+    q: '最も気になる肌の悩みは何ですか？',
+    options: ['乾燥・カサつき', '毛穴・テカリ', 'シミ・くすみ', 'ニキビ・肌荒れ']
+  },
+  {
+    q: '肌の敏感度はどのくらいですか？',
+    options: ['とても敏感（赤みや反応が出やすい）', '少し敏感', '普通', 'あまり敏感でない']
+  },
+  {
+    q: '年齢に最も近いものを選んでください。',
+    options: ['10〜20代', '30代', '40代', '50代以上']
+  },
+  {
+    q: 'スキンケアにかけられる予算感は？',
+    options: ['できるだけ抑えたい', '月3,000〜7,000円', '月7,000〜15,000円', '効果があれば気にしない']
+  }
+];
+
+let current = 0;
+let answers = [];
+let selectedOption = null;
+
+function renderQuestion() {
+  const q = questions[current];
+  document.getElementById('stepLabel').textContent = `質問 ${current + 1} / ${questions.length}`;
+  document.getElementById('progressFill').style.width = `${((current + 1) / questions.length) * 100}%`;
+  document.getElementById('questionText').textContent = q.q;
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.textContent = opt;
+    btn.onclick = () => selectOption(opt, btn);
+    container.appendChild(btn);
+  });
+  document.getElementById('nextBtn').disabled = true;
+  document.getElementById('nextBtn').textContent = current === questions.length - 1 ? '診断結果を見る' : '次へ';
+  selectedOption = null;
+}
+
+function selectOption(opt, btn) {
+  document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedOption = opt;
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQuestion() {
+  if (!selectedOption) return;
+  answers.push({ question: questions[current].q, answer: selectedOption });
+  current++;
+  if (current < questions.length) {
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+async function showResult() {
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+
+  try {
+    const response = await fetch('/api/diagnose', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers })
+    });
+
+    const result = await response.json();
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('resultTitle').textContent = `あなたの肌タイプ：${result.skin_type}`;
+    document.getElementById('resultBody').textContent = `${result.diagnosis}\n\n${result.prescription}`;
+
+    const list = document.getElementById('ingredientList');
+    result.ingredients.forEach(ing => {
+      const li = document.createElement('li');
+      li.textContent = ing;
+      list.appendChild(li);
+    });
+
+  } catch (e) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('resultTitle').textContent = 'あなたの肌タイプ：乾燥敏感肌';
+    document.getElementById('resultBody').textContent = '肌のバリア機能が低下しており、外部刺激に敏感な状態です。保湿を最優先にしながら、肌を守る成分を中心に処方します。\n\n継続使用により、朝の突っ張り感や赤みの改善が期待できます。';
+    ['セラミド複合体', 'パンテノール', 'ヒアルロン酸（三種）', 'アラントイン'].forEach(ing => {
+      const li = document.createElement('li');
+      li.textContent = ing;
+      document.getElementById('ingredientList').appendChild(li);
+    });
+  }
+}
+
+renderQuestion();
+</script>
+</body>
+</html>
