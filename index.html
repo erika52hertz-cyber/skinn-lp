@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKINN — AIが処方する、あなただけの美容液</title>
+<style>
+/* =============================================
+   TOKEN SYSTEM
+   Palette:  Ivory #F7F4EF | Stone #E8E3DA | Ink #1A1A1A
+             Forest #1C3A2A | Sage #4A7C5F | Gold #B8965A
+   Type:     Display: Georgia / "Times New Roman" (serif, authoritative)
+             Body: system-ui / -apple-system (clean, modern)
+   Signature: The single diagnostic-progress bar that
+              animates across the hero — science meets ritual.
+   ============================================= */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ivory:   #F7F4EF;
+  --stone:   #E8E3DA;
+  --ink:     #1A1A1A;
+  --forest:  #1C3A2A;
+  --sage:    #4A7C5F;
+  --gold:    #B8965A;
+  --gold-lt: #D4AF78;
+  --muted:   #6B6B6B;
+  --border:  #D8D3CA;
+  --white:   #FFFFFF;
+
+  --ff-display: Georgia, "Times New Roman", serif;
+  --ff-body:    -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+
+  --space-xs:  8px;
+  --space-sm:  16px;
+  --space-md:  32px;
+  --space-lg:  64px;
+  --space-xl:  96px;
+
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 20px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--ff-body);
+  background: var(--ivory);
+  color: var(--ink);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── LAYOUT ─── */
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+.wrap--narrow { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+/* ─── TYPOGRAPHY ─── */
+.display {
+  font-family: var(--ff-display);
+  font-style: italic;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sage);
+}
+
+/* ─── HEADER ─── */
+header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(247,244,239,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px; max-width: 1080px; margin: 0 auto;
+}
+.logo {
+  font-family: var(--ff-display);
+  font-size: 22px;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  color: var(--forest);
+  text-decoration: none;
+}
+.header-cta {
+  background: var(--forest);
+  color: var(--ivory);
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.header-cta:hover { background: var(--sage); }
+
+/* ─── HERO ─── */
+.hero {
+  padding-top: 120px;
+  padding-bottom: var(--space-xl);
+  background: var(--ivory);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+@media (max-width: 768px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+  .hero-visual { order: -1; }
+}
+
+.hero-eyebrow { margin-bottom: 16px; }
+.hero-title {
+  font-size: clamp(38px, 5.5vw, 62px);
+  margin-bottom: 24px;
+  color: var(--forest);
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--gold);
+}
+.hero-lead {
+  font-size: 16px;
+  color: var(--muted);
+  margin-bottom: 36px;
+  max-width: 440px;
+  line-height: 1.8;
+}
+.hero-actions { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.btn-primary {
+  display: inline-block;
+  background: var(--forest);
+  color: var(--ivory);
+  padding: 16px 36px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--sage); transform: translateY(-1px); }
+.btn-ghost {
+  display: inline-block;
+  color: var(--forest);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.hero-note {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+}
+
+/* Signature element: diagnostic bar */
+.hero-visual {
+  position: relative;
+}
+.skin-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: 0 8px 40px rgba(28,58,42,0.08), 0 2px 8px rgba(0,0,0,0.04);
+}
+.skin-card-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin-bottom: 20px;
+}
+.skin-params { list-style: none; }
+.skin-param {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--stone);
+}
+.skin-param:last-child { border: none; }
+.param-name {
+  font-size: 12px;
+  color: var(--muted);
+  width: 76px;
+  flex-shrink: 0;
+}
+.param-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: var(--stone);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.param-bar {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--sage), var(--gold));
+  transform-origin: left;
+  animation: growBar 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes growBar {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.param-bar:nth-child(1) { animation-delay: 0.1s; }
+.param-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--forest);
+  width: 32px;
+  text-align: right;
+}
+.skin-result {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--ivory);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--gold);
+}
+.skin-result-label { font-size: 10px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+.skin-result-text { font-size: 14px; font-weight: 600; color: var(--forest); line-height: 1.5; }
+
+/* ─── STATS ─── */
+.stats-section {
+  padding: var(--space-md) 0;
+  background: var(--forest);
+}
+.stats-inner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0;
+}
+.stat-item {
+  padding: 32px 24px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  text-align: center;
+}
+.stat-item:last-child { border: none; }
+.stat-num {
+  font-family: var(--ff-display);
+  font-size: 36px;
+  font-style: italic;
+  color: var(--gold-lt);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.stat-desc { font-size: 12px; color: rgba(247,244,239,0.65); letter-spacing: 0.05em; }
+
+/* ─── PROBLEM ─── */
+.section { padding: var(--space-xl) 0; }
+.section--alt { background: var(--white); }
+.section--dark { background: var(--forest); }
+
+.section-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.section-title {
+  font-size: clamp(28px, 3.5vw, 42px);
+  color: var(--forest);
+  margin-top: 12px;
+  line-height: 1.25;
+}
+.section--dark .section-title { color: var(--ivory); }
+.section--dark .eyebrow { color: var(--gold-lt); }
+
+.pain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+.pain-card {
+  background: var(--ivory);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 28px 24px;
+}
+.pain-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--forest);
+  margin-bottom: 10px;
+  font-family: var(--ff-display);
+  font-style: italic;
+}
+.pain-card p { font-size: 14px; color: var(--muted); line-height: 1.75; }
+
+/* ─── HOW IT WORKS ─── */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  position: relative;
+  counter-reset: step;
+}
+@media (max-width: 700px) {
+  .steps { grid-template-columns: 1fr; }
+}
+.step {
+  padding: 36px 32px;
+  border-right: 1px solid var(--border);
+  counter-increment: step;
+  position: relative;
+}
+.step:last-child { border: none; }
+.step::before {
+  content: "0" counter(step);
+  display: block;
+  font-family: var(--ff-display);
+  font-size: 48px;
+  font-style: italic;
+  color: var(--stone);
+  line-height: 1;
+  margin-bottom: 16px;
+}
+.step h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--forest);
+  margin-bottom: 12px;
+}
+.step p { font-size: 14px; color: var(--muted); line-height: 1.75; }
+.steps-wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* ─── INGREDIENT ─── */
+.ingredient-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+.ingredient-card {
+  border: 1px solid rgba(247,244,239,0.15);
+  border-radius: var(--radius-md);
+  padding: 24px 20px;
+  background: rgba(255,255,255,0.06);
+}
+.ingredient-card h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ivory);
+  margin-bottom: 8px;
+}
+.ingredient-card p { font-size: 12px; color: rgba(247,244,239,0.55); line-height: 1.7; }
+.ingredient-tag {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: rgba(184,150,90,0.2);
+  color: var(--gold-lt);
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+/* ─── QUIZ CTA ─── */
+.quiz-section {
+  padding: var(--space-xl) 0;
+  background: linear-gradient(135deg, var(--forest) 0%, #0E2219 100%);
+}
+.quiz-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+@media (max-width: 768px) { .quiz-inner { grid-template-columns: 1fr; } }
+
+.quiz-title {
+  font-size: clamp(28px, 3.5vw, 44px);
+  color: var(--ivory);
+  line-height: 1.2;
+  margin: 12px 0 20px;
+}
+.quiz-desc { font-size: 15px; color: rgba(247,244,239,0.6); line-height: 1.8; margin-bottom: 32px; }
+.btn-gold {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--ink);
+  padding: 18px 44px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-gold:hover { background: var(--gold-lt); transform: translateY(-1px); }
+
+/* Quiz card right side */
+.quiz-card {
+  background: rgba(247,244,239,0.05);
+  border: 1px solid rgba(247,244,239,0.12);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+.quiz-q {
+  margin-bottom: 20px;
+}
+.quiz-q-label {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold-lt);
+  margin-bottom: 10px;
+}
+.quiz-q-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ivory);
+  margin-bottom: 14px;
+}
+.quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.quiz-option {
+  background: rgba(247,244,239,0.07);
+  border: 1px solid rgba(247,244,239,0.15);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: rgba(247,244,239,0.75);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.quiz-option:hover, .quiz-option.selected {
+  background: rgba(184,150,90,0.18);
+  border-color: var(--gold);
+  color: var(--gold-lt);
+}
+.quiz-progress {
+  margin-top: 20px;
+  border-top: 1px solid rgba(247,244,239,0.1);
+  padding-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.quiz-progress-bar-wrap {
+  flex: 1;
+  height: 4px;
+  background: rgba(247,244,239,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.quiz-progress-bar {
+  width: 20%;
+  height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.quiz-progress-text { font-size: 11px; color: rgba(247,244,239,0.4); white-space: nowrap; }
+
+/* ─── TESTIMONIALS ─── */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.testimonial {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 28px 24px;
+}
+.testimonial-rating {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 14px;
+}
+.star {
+  width: 14px;
+  height: 14px;
+  background: var(--gold);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.testimonial-text {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.75;
+  margin-bottom: 18px;
+  font-style: italic;
+}
+.testimonial-author {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--forest);
+}
+.testimonial-meta {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.testimonial-tag {
+  display: inline-block;
+  font-size: 10px;
+  background: rgba(74,124,95,0.1);
+  color: var(--sage);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  letter-spacing: 0.08em;
+}
+
+/* ─── PRICING ─── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.pricing-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 32px 28px;
+  background: var(--white);
+  position: relative;
+}
+.pricing-card.featured {
+  border-color: var(--forest);
+  border-width: 2px;
+}
+.pricing-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--forest);
+  color: var(--ivory);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 4px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.pricing-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.pricing-price {
+  font-family: var(--ff-display);
+  font-size: 42px;
+  font-style: italic;
+  color: var(--forest);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.pricing-period { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+.pricing-features { list-style: none; }
+.pricing-feature {
+  font-size: 14px;
+  color: var(--muted);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--stone);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.pricing-feature:last-child { border: none; }
+.pricing-feature::before {
+  content: '';
+  display: block;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  border-radius: 50%;
+  background: var(--sage);
+  margin-top: 2px;
+  position: relative;
+}
+.pricing-feature::before {
+  content: '';
+  display: block;
+  width: 5px;
+  height: 9px;
+  min-width: 5px;
+  border-right: 2px solid var(--white);
+  border-bottom: 2px solid var(--white);
+  transform: rotate(45deg);
+  margin-top: 3px;
+  margin-left: 5px;
+}
+.check-wrap { display: flex; gap: 10px; align-items: flex-start; }
+.check-icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--sage);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+.check-icon::after {
+  content: '';
+  display: block;
+  width: 5px;
+  height: 8px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+.pricing-cta {
+  display: block;
+  text-align: center;
+  margin-top: 24px;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.pricing-cta-primary {
+  background: var(--forest);
+  color: var(--ivory);
+}
+.pricing-cta-primary:hover { background: var(--sage); }
+.pricing-cta-ghost {
+  border: 1px solid var(--border);
+  color: var(--forest);
+}
+.pricing-cta-ghost:hover { border-color: var(--sage); background: var(--ivory); }
+
+/* ─── FAQ ─── */
+.faq { max-width: 680px; margin: 0 auto; }
+.faq-item {
+  border-bottom: 1px solid var(--border);
+  padding: 20px 0;
+}
+.faq-q {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--forest);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  user-select: none;
+}
+.faq-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--sage);
+  margin-top: 2px;
+  transition: transform 0.2s;
+}
+.faq-item.open .faq-icon { transform: rotate(45deg); }
+.faq-a {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-top: 14px;
+  display: none;
+}
+.faq-item.open .faq-a { display: block; }
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--ink);
+  color: rgba(255,255,255,0.4);
+  padding: 40px 24px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.9;
+}
+footer .logo-footer {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 20px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.12em;
+  display: block;
+  margin-bottom: 16px;
+}
+footer a { color: rgba(255,255,255,0.4); text-decoration: none; }
+footer a:hover { color: rgba(255,255,255,0.7); }
+.footer-links { margin-bottom: 16px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+
+/* ─── UTILITY ─── */
+.text-center { text-align: center; }
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.guarantee-row {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 36px;
+}
+.guarantee-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.guarantee-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--sage);
+  flex-shrink: 0;
+}
+
+/* ─── STICKY CTA ─── */
+.sticky-cta {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--forest);
+  border-radius: 40px;
+  padding: 14px 28px;
+  box-shadow: 0 8px 32px rgba(28,58,42,0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+.sticky-cta.visible { opacity: 1; pointer-events: all; }
+.sticky-cta span { font-size: 14px; color: rgba(247,244,239,0.7); }
+.sticky-cta a {
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 22px;
+  border-radius: 20px;
+  text-decoration: none;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo">SKINN</a>
+    <a href="#quiz" class="header-cta">肌診断を受ける</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow hero-eyebrow">AI-Formulated Skincare</p>
+        <h1 class="display hero-title">
+          あなたの肌だけの<br>
+          <em>処方</em>が、毎月<br>
+          届く。
+        </h1>
+        <p class="hero-lead">
+          5つの質問に答えるだけで、AIが肌状態を解析。
+          あなた専用の処方で調合した美容液を定期便でお届けします。
+          同じ商品を、1万人に売る時代は終わりました。
+        </p>
+        <div class="hero-actions">
+          <a href="#quiz" class="btn-primary">無料で肌診断を受ける</a>
+          <a href="#how" class="btn-ghost">仕組みを見る</a>
+        </div>
+        <p class="hero-note">初回 ¥2,980 / 2回目以降 ¥6,980 / 解約はいつでも</p>
+      </div>
+
+      <div class="hero-visual">
+        <div class="skin-card">
+          <p class="skin-card-label">あなたの肌分析レポート</p>
+          <ul class="skin-params">
+            <li class="skin-param">
+              <span class="param-name">水分量</span>
+              <div class="param-bar-wrap"><div class="param-bar" style="width:42%; animation-delay:0.1s;"></div></div>
+              <span class="param-val">42%</span>
+            </li>
+            <li class="skin-param">
+              <span class="param-name">皮脂バランス</span>
+              <div class="param-bar-wrap"><div class="param-bar" style="width:68%; animation-delay:0.25s;"></div></div>
+              <span class="param-val">68%</span>
+            </li>
+            <li class="skin-param">
+              <span class="param-name">バリア機能</span>
+              <div class="param-bar-wrap"><div class="param-bar" style="width:31%; animation-delay:0.4s;"></div></div>
+              <span class="param-val">31%</span>
+            </li>
+            <li class="skin-param">
+              <span class="param-name">敏感度</span>
+              <div class="param-bar-wrap"><div class="param-bar" style="width:75%; animation-delay:0.55s;"></div></div>
+              <span class="param-val">75%</span>
+            </li>
+            <li class="skin-param">
+              <span class="param-name">透明感</span>
+              <div class="param-bar-wrap"><div class="param-bar" style="width:53%; animation-delay:0.7s;"></div></div>
+              <span class="param-val">53%</span>
+            </li>
+          </ul>
+          <div class="skin-result">
+            <p class="skin-result-label">AIの処方コメント</p>
+            <p class="skin-result-text">バリア機能の低下が乾燥の主因です。セラミド複合体とナイアシンアミドを主軸とした処方を推奨します。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-section">
+  <div class="wrap">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <div class="stat-num">5,000+</div>
+        <div class="stat-desc">処方済みの肌診断件数</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">84%</div>
+        <div class="stat-desc">3ヶ月継続率</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">1万通り</div>
+        <div class="stat-desc">処方パターンの組み合わせ</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">30日</div>
+        <div class="stat-desc">全額返金保証</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section-header">
+      <p class="eyebrow">なぜ、スキンケアは効かないのか</p>
+      <h2 class="display section-title">同じ商品が、<br>全員に効くはずがない。</h2>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <h3>肌質は人それぞれ違う</h3>
+        <p>乾燥・脂性・混合・敏感。しかし市場に並ぶ商品は「乾燥肌向け」「毛穴ケア」のような大まかな区分しかない。あなたの肌固有の状態は反映されていない。</p>
+      </div>
+      <div class="pain-card">
+        <h3>季節と環境で肌は変わる</h3>
+        <p>梅雨・猛暑・乾燥した冬。湿度・紫外線・ストレスによって肌状態は毎月変化する。半年前に合っていた化粧水が今も合うとは限らない。</p>
+      </div>
+      <div class="pain-card">
+        <h3>成分過多が肌を傷める</h3>
+        <p>良かれと思って選んだ「美容成分たっぷり」の製品が、実は肌の負担になっているケースも多い。あなたの肌が本当に必要とする成分だけを届けるべきだ。</p>
+      </div>
+      <div class="pain-card">
+        <h3>試行錯誤に費やすコストと時間</h3>
+        <p>平均的な女性が生涯スキンケアに費やす金額は300万円以上とも言われる。その多くが「合わなかった商品」への出費だ。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="section-header">
+      <p class="eyebrow">仕組み</p>
+      <h2 class="display section-title">3つのステップで<br>あなたの処方が届く</h2>
+    </div>
+    <div class="steps-wrap">
+      <div class="steps">
+        <div class="step">
+          <h3>肌診断（5分）</h3>
+          <p>肌タイプ・お悩み・生活環境・季節などについての5つの質問に回答します。AIがあなたの肌状態を解析し、1万通り以上の処方パターンの中から最適解を導き出します。</p>
+        </div>
+        <div class="step">
+          <h3>専用処方を調合</h3>
+          <p>診断結果をもとに、美容液の成分・濃度・テクスチャーをカスタマイズして製造します。あなたの名前が入ったボトルに充填し、丁寧に梱包します。</p>
+        </div>
+        <div class="step">
+          <h3>毎月届いて、育てる</h3>
+          <p>翌月からは前月の使用感をフィードバックするだけで、AIが処方を微調整します。使い続けるほど、あなたの肌に最適化されていきます。</p>
+        </div>
+      </div>
+    </div>
+    <div class="guarantee-row">
+      <div class="guarantee-item"><div class="guarantee-dot"></div>解約はいつでも可能</div>
+      <div class="guarantee-item"><div class="guarantee-dot"></div>30日間全額返金保証</div>
+      <div class="guarantee-item"><div class="guarantee-dot"></div>送料無料</div>
+      <div class="guarantee-item"><div class="guarantee-dot"></div>着色料・鉱物油フリー</div>
+    </div>
+  </div>
+</section>
+
+<!-- INGREDIENTS -->
+<section class="section section--dark">
+  <div class="wrap">
+    <div class="section-header">
+      <p class="eyebrow" style="color:var(--gold-lt)">成分へのこだわり</p>
+      <h2 class="display section-title" style="color:var(--ivory)">処方を支える、<br>厳選された成分群。</h2>
+      <p class="mt-sm" style="color:rgba(247,244,239,0.55); font-size:15px; max-width:560px; margin:12px auto 0;">あなたの肌状態に応じて、以下の成分ライブラリから最適な組み合わせを選択します。</p>
+    </div>
+    <div class="ingredient-grid">
+      <div class="ingredient-card">
+        <span class="ingredient-tag">保湿</span>
+        <h4>セラミド複合体</h4>
+        <p>皮膚のバリア機能を内側から補修。外部刺激から肌を守りながら水分蒸散を防ぐ。</p>
+      </div>
+      <div class="ingredient-card">
+        <span class="ingredient-tag">美白</span>
+        <h4>ナイアシンアミド</h4>
+        <p>メラニン移行の抑制、毛穴の目立ちを軽減。敏感肌にも使いやすい高機能成分。</p>
+      </div>
+      <div class="ingredient-card">
+        <span class="ingredient-tag">抗酸化</span>
+        <h4>ビタミンC誘導体</h4>
+        <p>安定型ビタミンCが酸化ストレスを低減。コラーゲン産生を促し、ハリを与える。</p>
+      </div>
+      <div class="ingredient-card">
+        <span class="ingredient-tag">再生</span>
+        <h4>レチノール（低刺激）</h4>
+        <p>細胞ターンオーバーを促進するエイジングケア成分。敏感な方には低濃度処方を採用。</p>
+      </div>
+      <div class="ingredient-card">
+        <span class="ingredient-tag">鎮静</span>
+        <h4>パンテノール</h4>
+        <p>肌荒れ・赤みを抑える。炎症が起きやすい肌へのケアに不可欠な成分。</p>
+      </div>
+      <div class="ingredient-card">
+        <span class="ingredient-tag">保湿</span>
+        <h4>ヒアルロン酸（三種）</h4>
+        <p>高・中・低分子の三種を配合。表皮から真皮まで、多層的に保湿する。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ CTA -->
+<section class="quiz-section" id="quiz">
+  <div class="wrap">
+    <div class="quiz-inner">
+      <div>
+        <p class="eyebrow" style="color:var(--gold-lt)">肌診断</p>
+        <h2 class="display quiz-title">5分で、<br>あなたの処方が<br>決まります。</h2>
+        <p class="quiz-desc">費用はかかりません。診断後に処方結果を確認してから、購入するかどうか決めてください。</p>
+        <a href="#" class="btn-gold">無料で肌診断を受ける</a>
+        <p class="mt-sm" style="font-size:12px; color:rgba(247,244,239,0.35);">個人情報の入力は購入時のみです</p>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">
+          <p class="quiz-q-label">質問 1 / 5</p>
+          <p class="quiz-q-text">洗顔後、何もつけないと肌はどうなりますか？</p>
+          <div class="quiz-options">
+            <div class="quiz-option" onclick="selectOption(this)">すぐに突っ張る</div>
+            <div class="quiz-option" onclick="selectOption(this)">少し突っ張る</div>
+            <div class="quiz-option" onclick="selectOption(this)">ほぼ変化なし</div>
+            <div class="quiz-option selected" onclick="selectOption(this)">テカリが気になる</div>
+          </div>
+        </div>
+        <div class="quiz-progress">
+          <div class="quiz-progress-bar-wrap">
+            <div class="quiz-progress-bar" id="progressBar"></div>
+          </div>
+          <span class="quiz-progress-text">診断中... 20%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section-header">
+      <p class="eyebrow">使った方の声</p>
+      <h2 class="display section-title">変化を実感した、<br>リアルな声。</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <span class="testimonial-tag">乾燥肌 / 30代</span>
+        <div class="testimonial-rating">
+          <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        </div>
+        <p class="testimonial-text">「市販のものを何十本と試してきましたが、ここまで自分の肌に合ったものに出会えたのは初めてです。3週間で朝の突っ張り感がなくなりました。」</p>
+        <p class="testimonial-author">田中 A.</p>
+        <p class="testimonial-meta">使用開始から4ヶ月 / 東京都在住</p>
+      </div>
+      <div class="testimonial">
+        <span class="testimonial-tag">混合肌 / 20代</span>
+        <div class="testimonial-rating">
+          <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        </div>
+        <p class="testimonial-text">「Tゾーンが脂っぽくて、でも頬は乾く混合肌で悩んでいました。処方が絶妙で、初めてバランスが整った感覚があります。」</p>
+        <p class="testimonial-author">木村 S.</p>
+        <p class="testimonial-meta">使用開始から2ヶ月 / 大阪府在住</p>
+      </div>
+      <div class="testimonial">
+        <span class="testimonial-tag">敏感肌 / 40代</span>
+        <div class="testimonial-rating">
+          <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        </div>
+        <p class="testimonial-text">「赤みが出やすく、新しい商品を試すのが怖かった。でも診断結果を見て成分に納得できたので安心して始められました。今は肌が落ち着いています。」</p>
+        <p class="testimonial-author">佐藤 M.</p>
+        <p class="testimonial-meta">使用開始から6ヶ月 / 福岡県在住</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-header">
+      <p class="eyebrow">料金プラン</p>
+      <h2 class="display section-title">シンプルな料金体系。<br>縛りなし。</h2>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <p class="pricing-name">お試しプラン</p>
+        <p class="pricing-price">¥2,980</p>
+        <p class="pricing-period">初回のみ / 送料無料</p>
+        <ul class="pricing-features">
+          <li class="check-wrap"><div class="check-icon"></div><span>AI肌診断 & 処方レポート</span></li>
+          <li class="check-wrap"><div class="check-icon"></div><span>パーソナライズ美容液 30ml</span></li>
+          <li class="check-wrap"><div class="check-icon"></div><span>専用処方書（同梱）</span></li>
+        </ul>
+        <a href="#quiz" class="pricing-cta pricing-cta-ghost">まずは試してみる</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-badge">最もお得</div>
+        <p class="pricing-name">定期便プラン</p>
+        <p class="pricing-price">¥6,980</p>
+        <p class="pricing-period">月額 / 2回目以降 / 送料無料</p>
+        <ul class="pricing-features">
+          <li class="check-wrap"><div class="check-icon"></div><span>毎月処方が更新される</span></li>
+          <li class="check-wrap"><div class="check-icon"></div><span>パーソナライズ美容液 30ml</span></li>
+          <li class="check-wrap"><div class="check-icon"></div><span>使用感フィードバック機能</span></li>
+          <li class="check-wrap"><div class="check-icon"></div><span>AIカウンセリング（チャット）</span></li>
+          <li class="check-wrap"><div class="check-icon"></div><span>30日間全額返金保証</span></li>
+          <li class="check-wrap"><div class="check-icon"></div><span>解約はいつでも</span></li>
+        </ul>
+        <a href="#quiz" class="pricing-cta pricing-cta-primary">無料で肌診断を受ける</a>
+      </div>
+    </div>
+    <p class="text-center mt-md" style="font-size:13px; color:var(--muted);">
+      定期便の解約・スキップは、次回お届け日の7日前まで可能です。<br>
+      初回から30日以内であれば、理由を問わず全額返金いたします。
+    </p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section-header">
+      <p class="eyebrow">よくある質問</p>
+      <h2 class="display section-title">ご不明な点は<br>こちらで解決を。</h2>
+    </div>
+    <div class="faq">
+      <div class="faq-item open">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>処方はどのように決まりますか？</span>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">肌診断で回答いただいた内容をもとに、AIが1万通り以上の処方パターンを解析し、あなたの肌状態に最適な成分の種類・配合比率・テクスチャーを決定します。毎月のフィードバックをもとに処方を調整していくため、使い続けるほど精度が上がります。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>敏感肌でも使えますか？</span>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">はい。敏感肌の方向けの処方パターンを用意しています。診断で「敏感肌」「赤みが出やすい」とご回答いただいた場合、刺激の少ない成分を中心に、低濃度・低刺激で調合します。30日間返金保証もございますので、安心してお試しいただけます。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>いつでも解約できますか？</span>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">はい。次回お届け日の7日前までにマイページから手続きをいただければ、いつでも解約できます。電話やメールでの手続きも対応しています。縛りや違約金は一切ありません。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>注文からいつ届きますか？</span>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">ご注文確定後、個別処方での調合を経てから出荷します。初回は診断から7〜10営業日程度でのお届けとなります。2回目以降の定期便は毎月同日前後に発送します。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>成分の安全性について教えてください。</span>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">すべての原料は国内の薬機法に準拠した化粧品原料規格に基づいて選定しています。着色料・鉱物油・パラベン・石油系界面活性剤は使用していません。製造はGMP認定工場に委託しており、品質管理を徹底しています。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="section" style="padding: 80px 0; text-align:center; background: var(--ivory); border-top:1px solid var(--border);">
+  <div class="wrap--narrow">
+    <p class="eyebrow">今すぐ始める</p>
+    <h2 class="display" style="font-size: clamp(32px, 4vw, 50px); color:var(--forest); margin:12px 0 20px; line-height:1.2;">
+      あなたの処方を、<br>見つけに行こう。
+    </h2>
+    <p style="font-size:15px; color:var(--muted); margin-bottom:36px; line-height:1.8;">
+      診断は5分、無料。あなたの肌の現在地を知ることから始まります。
+    </p>
+    <a href="#quiz" class="btn-primary" style="font-size:16px; padding:18px 48px;">無料で肌診断を受ける</a>
+    <div class="guarantee-row" style="justify-content:center; margin-top:28px;">
+      <div class="guarantee-item"><div class="guarantee-dot"></div>クレジットカード不要</div>
+      <div class="guarantee-item"><div class="guarantee-dot"></div>30日返金保証</div>
+      <div class="guarantee-item"><div class="guarantee-dot"></div>解約自由</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="logo-footer">SKINN</span>
+  <div class="footer-links">
+    <a href="#">特定商取引法に基づく表記</a>
+    <a href="#">プライバシーポリシー</a>
+    <a href="#">利用規約</a>
+    <a href="#">お問い合わせ</a>
+  </div>
+  <p>
+    本製品は化粧品であり、医薬品ではありません。効能・効果を保証するものではありません。<br>
+    &copy; 2026 SKINN. All rights reserved.
+  </p>
+</footer>
+
+<!-- STICKY CTA -->
+<div class="sticky-cta" id="stickyCta">
+  <span>あなただけの処方を</span>
+  <a href="#quiz">無料で診断する</a>
+</div>
+
+<script>
+// FAQ toggle
+function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// Quiz option select
+function selectOption(el) {
+  el.closest('.quiz-options').querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// Sticky CTA on scroll
+const stickyCta = document.getElementById('stickyCta');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 500) {
+    stickyCta.classList.add('visible');
+  } else {
+    stickyCta.classList.remove('visible');
+  }
+});
+</script>
+</body>
+</html>
